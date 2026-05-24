@@ -1,4 +1,3 @@
-let apikey = process.env.GROQ_API_KEY || "";  // Load from environment variable
 const chatbox = document.getElementById("chatbox");
 const userinput = document.getElementById("userinput");
 const sendbutton = document.getElementById("send-button");
@@ -21,32 +20,27 @@ function showtyping() {
 }
 
 async function getbotreply(usermessage) {
-  const url = "https://api.groq.com/openai/v1/chat/completions";
-
   try {
-    const response = await fetch(url, {
-      method: "POST",
+    const response = await fetch('http://localhost:3000/chat', {
+      method: 'POST',
       headers: {
-        "Authorization": `Bearer ${apikey}`,   
-        "Content-Type": "application/json"
+        'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-        model: "openai/gpt-oss-20b",          
-        messages: [
-          { role: "user", content: usermessage }
-        ]
-      })
+      body: JSON.stringify({ message: usermessage })
     });
 
     const data = await response.json();
-    console.log(data);
+    
+    if (data.error) {
+      return "Error: " + data.error;
+    }
 
     // Return the bot's reply text
     return data.choices[0].message.content;
 
   } catch (error) {
     console.error("Error:", error);
-    return "Sorry, something went wrong.";
+    return "Sorry, something went wrong. Make sure the server is running on localhost:3000";
   }
 }
 
